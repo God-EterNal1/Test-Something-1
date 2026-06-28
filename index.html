@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐍 Super Snake: Local Custom Edition</title>
+    <title>🐍 Super Snake: Ultra Realistic & VFX Edition</title>
     <style>
         body {
-            background-color: #1a1a1a;
+            background-color: #0e1111;
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -16,12 +16,12 @@
             padding: 20px;
         }
 
-        h1 { margin-bottom: 10px; color: #4CAF50; text-shadow: 0px 0px 10px rgba(76,175,80,0.5); }
+        h1 { margin-bottom: 10px; color: #00FF87; text-shadow: 0px 0px 15px rgba(0,255,135,0.6); }
 
         .game-container {
             display: flex;
-            gap: 20px;
-            max-width: 1000px;
+            gap: 25px;
+            max-width: 1100px;
             width: 100%;
             justify-content: center;
             flex-wrap: wrap;
@@ -32,118 +32,132 @@
         .stats-bar {
             display: flex;
             justify-content: space-between;
-            width: 400px;
-            background: #2d2d2d;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            width: 440px;
+            background: linear-gradient(135deg, #1f2525, #141919);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            border: 1px solid #2c3535;
             box-sizing: border-box;
         }
 
-        .stat-box { font-size: 16px; font-weight: bold; }
-        .coin-txt { color: #FFD700; }
-        .score-txt { color: #00E5FF; }
-        .high-txt { color: #FF9800; }
+        .stat-box { font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .coin-txt { color: #FFD700; text-shadow: 0 0 8px rgba(255,215,0,0.4); }
+        .score-txt { color: #00E5FF; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
+        .high-txt { color: #FF5722; text-shadow: 0 0 8px rgba(255,87,34,0.4); }
 
         canvas {
-            border: 4px solid #333;
-            background-color: #111;
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.5);
-            border-radius: 4px;
+            border: 4px solid #222;
+            background-color: #050707;
+            box-shadow: 0px 15px 35px rgba(0,0,0,0.7);
+            border-radius: 8px;
         }
 
         .side-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
-            width: 320px;
+            width: 340px;
         }
 
         .panel-box {
-            background: #252525;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            background: #151a1a;
+            border: 1px solid #242e2e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
-        .panel-box h3 { margin-top: 0; border-bottom: 2px solid #4CAF50; padding-bottom: 5px; }
+        .panel-box h3 { margin-top: 0; border-bottom: 2px solid #00FF87; padding-bottom: 8px; font-size: 18px; letter-spacing: 0.5px;}
 
         /* ระบบร้านค้า */
+        .shop-container {
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        /* แต่ง Scrollbar ร้านค้า */
+        .shop-container::-webkit-scrollbar { width: 6px; }
+        .shop-container::-webkit-scrollbar-thumb { background: #00FF87; border-radius: 4px; }
+
         .shop-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #1e1e1e;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border: 1px solid #444;
+            background: #1c2323;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #2a3535;
+            transition: all 0.2s;
         }
+        .shop-item:hover { border-color: #00FF87; background: #202929; }
 
         .shop-btn {
-            background: #4CAF50;
-            color: white;
+            background: #00FF87;
+            color: #050707;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 8px 14px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.2s;
         }
-        .shop-btn.owned { background: #2196F3; }
-        .shop-btn.equipped { background: #FF9800; }
-        .shop-btn:disabled { background: #555; cursor: not-allowed; }
+        .shop-btn.owned { background: #00B0FF; color: white; }
+        .shop-btn.equipped { background: #FF9100; color: white; }
+        .shop-btn:disabled { background: #334141; color: #777; cursor: not-allowed; }
 
         /* จอเกมโอเวอร์ */
         #game-over-screen {
             position: absolute;
-            background: rgba(0,0,0,0.85);
-            width: 400px;
-            height: 400px;
+            background: rgba(5,7,7,0.9);
+            width: 440px;
+            height: 440px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border-radius: 4px;
+            border-radius: 8px;
             display: none;
+            box-sizing: border-box;
         }
-        #game-over-screen button { padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;}
+        #restart-btn { padding: 12px 28px; background: linear-gradient(135deg, #00FF87, #60EFFF); color: #000; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 0 15px rgba(0,255,135,0.4); transition: transform 0.1s;}
+        #restart-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <h1>🐍 Super Snake: Custom Shop Edition</h1>
+    <h1>🐍 Super Snake: Ultra Realistic & VFX</h1>
     
     <div class="game-container">
         <div class="main-panel">
             <div class="stats-bar">
-                <div class="stat-box score-txt">คะแนน: <span id="ui-score">0</span></div>
-                <div class="stat-box coin-txt">💰 เงิน: <span id="ui-coins">0</span></div>
-                <div class="stat-box high-txt">🏆 สถิติสูงสุด: <span id="ui-highscore">0</span></div>
+                <div class="stat-box score-txt">SCORE: <span id="ui-score">0</span></div>
+                <div class="stat-box coin-txt">💰 COINS: <span id="ui-coins">0</span></div>
+                <div class="stat-box high-txt">🏆 BEST: <span id="ui-highscore">0</span></div>
             </div>
             
             <div style="position: relative;">
-                <canvas id="gameCanvas" width="400" height="400"></canvas>
+                <canvas id="gameCanvas" width="440" height="440"></canvas>
                 
                 <div id="game-over-screen">
-                    <h2 style="color: #ff4444; margin: 0 0 10px 0; font-size: 32px;">GAME OVER</h2>
-                    <p style="font-size: 18px; margin-bottom: 20px;">คะแนนรอบนี้: <span id="final-score-txt" style="color:#00E5FF; font-weight:bold;">0</span></p>
-                    <button id="restart-btn">เล่นใหม่อีกครั้ง</button>
+                    <h2 style="color: #ff3344; margin: 0 0 10px 0; font-size: 36px; text-shadow: 0 0 15px rgba(255,51,68,0.5);">GAME OVER</h2>
+                    <p style="font-size: 20px; margin-bottom: 25px;">คะแนนรวม: <span id="final-score-txt" style="color:#00E5FF; font-weight:bold;">0</span></p>
+                    <button id="restart-btn">PLAY AGAIN</button>
                 </div>
             </div>
         </div>
 
         <div class="side-panel">
             <div class="panel-box">
-                <h3>🛒 ร้านค้าสกิน & แฟชั่น</h3>
-                <div id="shop-container"></div>
+                <h3>🛒 EXCLUSIVE SKIN SHOP</h3>
+                <div id="shop-container" class="shop-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- ระบบบันทึกข้อมูลฝังไว้ในเครื่อง (Local Storage) ---
         let totalCoins = parseInt(localStorage.getItem('local_snake_coins')) || 0;
         let highScore = parseInt(localStorage.getItem('local_snake_highscore')) || 0;
         let unlockedItems = JSON.parse(localStorage.getItem('local_snake_unlocked')) || ['skin-green', 'hat-none'];
@@ -151,34 +165,35 @@
         let equippedHat = localStorage.getItem('local_snake_equipped_hat') || 'hat-none';
 
         const shopItems = [
-            { id: 'skin-green', type: 'skin', name: '🟢 สกินสีเขียว', price: 0 },
-            { id: 'skin-pink', type: 'skin', name: '🌸 สกินสีชมพูพาสเทล', price: 15 },
-            { id: 'skin-red', type: 'skin', name: '🔴 สกินสีแดงเพลิง', price: 30 },
-            { id: 'skin-rainbow', type: 'skin', name: '🌈 สกินสีรุ้งไฟวิ่ง', price: 80 },
-            { id: 'hat-none', type: 'hat', name: '🤠 ไม่ใส่หมวก', price: 0 },
-            { id: 'hat-cowboy', type: 'hat', name: '🤠 หมวกคาวบอยสุดเท่', price: 20 },
-            { id: 'hat-mask', type: 'hat', name: '🎭 หน้ากากแฟนซี', price: 45 },
+            { id: 'skin-green', type: 'skin', name: '🟢 สกินงูเขียวมรกต 3D', price: 0 },
+            { id: 'skin-pink', type: 'skin', name: '🌸 สกินชมพูซากุระเงางาม', price: 15 },
+            { id: 'skin-red', type: 'skin', name: '🔴 สกินแดงทับทิมสปาร์ค', price: 30 },
+            { id: 'skin-nebula', type: 'skin', name: '🌌 สกินกาแล็กซี่เนบิวลา', price: 60 },
+            { id: 'skin-rainbow', type: 'skin', name: '🌈 สกินนีออนเรนโบว์ไฟวิ่ง', price: 99 },
+            { id: 'hat-none', type: 'hat', name: '❌ ไม่สวมเครื่องแต่งกาย', price: 0 },
+            { id: 'hat-cowboy', type: 'hat', name: '🤠 หมวกคาวบอยหนังแท้', price: 20 },
+            { id: 'hat-mask', type: 'hat', name: '🎭 หน้ากากดิจิทัลไซเบอร์', price: 40 },
+            { id: 'hat-crown', type: 'hat', name: '👑 มงกุฎราชาทองคำแท้', price: 85 },
         ];
 
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        const gridSize = 20;
+        const gridSize = 22; // ขยายขนาดให้ตัวงูและของตกแต่งเห็นชัดเจนยิ่งขึ้น
         const tileCount = canvas.width / gridSize;
 
-        let snake = [{ x: 10, y: 10 }];
+        let snake = [];
         let food = { x: 5, y: 5 };
         let dx = 1, dy = 0;
         let currentScore = 0;
         let gameInterval;
         let isGameOver = false;
         let rainbowHue = 0;
+        let particles = []; // อาร์เรย์เก็บเศษเอฟเฟกต์ระเบิดตอนกินอาหาร
 
         function updateUI() {
             document.getElementById("ui-coins").innerText = totalCoins;
             document.getElementById("ui-score").innerText = currentScore;
             document.getElementById("ui-highscore").innerText = highScore;
-            
-            // เซฟค่าลงเบราว์เซอร์
             localStorage.setItem('local_snake_coins', totalCoins);
             localStorage.setItem('local_snake_highscore', highScore);
         }
@@ -189,17 +204,16 @@
             shopItems.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "shop-item";
-                
                 let btnText = `💰 ${item.price}`;
                 let btnClass = "shop-btn";
                 let isDisabled = false;
 
                 if (unlockedItems.includes(item.id)) {
                     if (equippedSkin === item.id || equippedHat === item.id) {
-                        btnText = "ใช้งานอยู่";
+                        btnText = "EQUIPPED";
                         btnClass = "shop-btn equipped";
                     } else {
-                        btnText = "สวมใส่";
+                        btnText = "EQUIP";
                         btnClass = "shop-btn owned";
                     }
                 } else if (totalCoins < item.price) {
@@ -223,31 +237,66 @@
                     
                     localStorage.setItem('local_snake_equipped_skin', equippedSkin);
                     localStorage.setItem('local_snake_equipped_hat', equippedHat);
-                    
                     updateUI();
                     renderShop();
                 };
-                
                 div.appendChild(btn);
                 container.appendChild(div);
             });
         }
 
         function resetGame() {
-            snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }];
+            snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
             generateFood();
             dx = 1; dy = 0;
             currentScore = 0;
+            particles = [];
             isGameOver = false;
             document.getElementById("game-over-screen").style.display = "none";
             updateUI();
             clearInterval(gameInterval);
-            gameInterval = setInterval(gameLoop, 100);
+            gameInterval = setInterval(gameLoop, 90); // ปรับความเร็วให้กระชับเล่นสนุกขึ้น
         }
 
         function generateFood() {
             food.x = Math.floor(Math.random() * tileCount);
             food.y = Math.floor(Math.random() * tileCount);
+            // ป้องกันผลไม้เกิดทับตัวงู
+            if(snake.some(seg => seg.x === food.x && seg.y === food.y)) {
+                generateFood();
+            }
+        }
+
+        // คลาสสำหรับระเบิดเอฟเฟกต์กระจาย (VFX Particles)
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3 + 1;
+                this.alpha = 1;
+                this.speedX = (Math.random() - 0.5) * 6;
+                this.speedY = (Math.random() - 0.5) * 6;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.alpha -= 0.04;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createBurstEffect(x, y, color) {
+            for (let i = 0; i < 12; i++) {
+                particles.push(new Particle(x, y, color));
+            }
         }
 
         function gameLoop() {
@@ -264,10 +313,12 @@
 
             if (head.x === food.x && head.y === food.y) {
                 currentScore += 10;
-                totalCoins += 1; // กินได้ 1 ชิ้น รับเงิน 1 Coin นำไปสะสมซื้อชุดแต่งกาย
-                if (currentScore > highScore) {
-                    highScore = currentScore;
-                }
+                totalCoins += 1;
+                if (currentScore > highScore) highScore = currentScore;
+                
+                // สั่งระเบิดอนุภาคเอฟเฟกต์กระจายตามสีอาหาร
+                createBurstEffect(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, "#ff3838");
+                
                 updateUI();
                 renderShop();
                 generateFood();
@@ -275,59 +326,141 @@
                 snake.pop();
             }
 
+            // อัปเดตเอฟเฟกต์อนุภาค
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => p.update());
+
             draw();
         }
 
         function draw() {
-            ctx.fillStyle = "#111";
+            ctx.fillStyle = "#050707";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // วาดอาหาร (ผลไม้สีแดงมีแสงออร่า)
-            ctx.fillStyle = "#ff3333";
-            ctx.shadowColor = "#ff3333";
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.arc(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, gridSize/2 - 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0; 
+            // วาดตารางแบ็คกราวด์จางๆ เพิ่มความสมจริงของพื้นที่สนาม
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
+            ctx.lineWidth = 1;
+            for(let i=0; i<tileCount; i++) {
+                ctx.beginPath(); ctx.moveTo(i*gridSize, 0); ctx.lineTo(i*gridSize, canvas.height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i*gridSize); ctx.lineTo(canvas.width, i*gridSize); ctx.stroke();
+            }
+
+            // วาดผลไม้แบบเงาสะท้อนสมจริง (Specular Highlight Effect)
+            const fX = food.x * gridSize + gridSize/2;
+            const fY = food.y * gridSize + gridSize/2;
+            const fR = gridSize/2 - 1;
+
+            ctx.save();
+            let foodGrad = ctx.createRadialGradient(fX - 3, fY - 3, 1, fX, fY, fR);
+            foodGrad.addColorStop(0, '#ff6b6b');   // จุดเงาสว่างสุด
+            foodGrad.addColorStop(0.3, '#ff1a1a'); // สีผิวผลไม้แกนกลาง
+            foodGrad.addColorStop(1, '#990000');   // ขอบเงาเข้มมิติใต้ผล
+            
+            ctx.fillStyle = foodGrad;
+            ctx.shadowColor = "#ff1a1a";
+            ctx.shadowBlur = 12;
+            ctx.beginPath(); ctx.arc(fX, fY, fR, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+
+            // วาดจุดสะท้อนแสงแวววาวสีขาวเล็กๆ บนลูกแอปเปิ้ล
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath(); ctx.arc(fX - 4, fY - 4, 1.5, 0, Math.PI * 2); ctx.fill();
 
             rainbowHue = (rainbowHue + 3) % 360;
 
-            // วาดตัวงูตามดีไซน์และชุดแต่งกาย
+            // วาดตัวงูที่มีมิติความนูนสูง (3D Gradient Layer)
             snake.forEach((part, index) => {
                 const isHead = index === 0;
-                
+                const pX = part.x * gridSize + gridSize/2;
+                const pY = part.y * gridSize + gridSize/2;
+                const pR = isHead ? gridSize/2 : gridSize/2 - 1.5;
+
+                ctx.save();
+                let snakeGrad = ctx.createRadialGradient(pX - 3, pY - 3, 1, pX, pY, pR);
+
+                // คัดสรรโทนสีตามระบบชุดร้านค้าสกินที่เลือกสวมใส่
                 if (equippedSkin === 'skin-pink') {
-                    ctx.fillStyle = isHead ? "#FF69B4" : "#FFB6C1";
+                    snakeGrad.addColorStop(0, '#ffa4d4'); snakeGrad.addColorStop(0.4, '#ff69b4'); snakeGrad.addColorStop(1, '#b32d6b');
                 } else if (equippedSkin === 'skin-red') {
-                    ctx.fillStyle = isHead ? "#D50000" : "#FF5252";
+                    snakeGrad.addColorStop(0, '#ff6b6b'); snakeGrad.addColorStop(0.4, '#e50914'); snakeGrad.addColorStop(1, '#7f0000');
+                } else if (equippedSkin === 'skin-nebula') {
+                    snakeGrad.addColorStop(0, '#00e5ff'); snakeGrad.addColorStop(0.5, '#7209b7'); snakeGrad.addColorStop(1, '#3f0770');
                 } else if (equippedSkin === 'skin-rainbow') {
-                    ctx.fillStyle = `hsl(${(rainbowHue + index * 15) % 360}, 90%, 60%)`;
-                } else {
-                    ctx.fillStyle = isHead ? "#2E7D32" : "#4CAF50";
+                    let h = (rainbowHue + index * 12) % 360;
+                    snakeGrad.addColorStop(0, `hsl(${h}, 100%, 80%)`); snakeGrad.addColorStop(0.5, `hsl(${h}, 90%, 55%)`); snakeGrad.addColorStop(1, `hsl(${h}, 100%, 30%)`);
+                } else { // สีเขียวมรกตมาตรฐาน
+                    snakeGrad.addColorStop(0, '#a3e2a5'); snakeGrad.addColorStop(0.4, '#2e7d32'); snakeGrad.addColorStop(1, '#1b5e20');
                 }
 
-                ctx.beginPath();
-                ctx.arc(part.x * gridSize + gridSize/2, part.y * gridSize + gridSize/2, gridSize/2 - 1, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = snakeGrad;
+                
+                // ใส่แสงเรืองแสงบางๆ ใต้ตัวงูให้ดูลอยนูนเด่นขึ้นมา
+                if(isHead) {
+                    ctx.shadowColor = "rgba(255,255,255,0.3)";
+                    ctx.shadowBlur = 8;
+                }
+                
+                ctx.beginPath(); ctx.arc(pX, pY, pR, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
 
+                // ใส่ระบบ "ลูกตาและใบหน้าสมจริง" ให้ที่หัวงู
                 if (isHead) {
+                    ctx.fillStyle = "#ffffff"; // ตาขาว
+                    let eyeOffset1 = {x:0, y:0}, eyeOffset2 = {x:0, y:0};
+                    let pupilOffset = {x:0, y:0}; // รูม่านตาดำหันตามทิศ
+
+                    // คํานวณทิศทางดวงตาตามแรงวิ่งเลี้ยวของงูจริง
+                    if (dx === 1) {       eyeOffset1 = {x:4, y:-5};  eyeOffset2 = {x:4, y:5};   pupilOffset = {x:1, y:0}; }
+                    else if (dx === -1) { eyeOffset1 = {x:-4, y:-5}; eyeOffset2 = {x:-4, y:5};  pupilOffset = {x:-1, y:0}; }
+                    else if (dy === 1) {  eyeOffset1 = {x:-5, y:4};  eyeOffset2 = {x:5, y:4};   pupilOffset = {x:0, y:1}; }
+                    else if (dy === -1) { eyeOffset1 = {x:-5, y:-4}; eyeOffset2 = {x:5, y:-4};  pupilOffset = {x:0, y:-1}; }
+
+                    // วาดตาขาวคู่
+                    ctx.beginPath(); ctx.arc(pX + eyeOffset1.x, pY + eyeOffset1.y, 3.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(pX + eyeOffset2.x, pY + eyeOffset2.y, 3.5, 0, Math.PI * 2); ctx.fill();
+
+                    // วาดตาดำคู่
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); ctx.arc(pX + eyeOffset1.x + pupilOffset.x, pY + eyeOffset1.y + pupilOffset.y, 1.8, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(pX + eyeOffset2.x + pupilOffset.x, pY + eyeOffset2.y + pupilOffset.y, 1.8, 0, Math.PI * 2); ctx.fill();
+
+                    // --- วาดเครื่องแต่งกายแฟชั่นเสริมระดับพรีเมียมบนหัวงู ---
                     const hX = part.x * gridSize;
                     const hY = part.y * gridSize;
-                    
+
                     if (equippedHat === 'hat-cowboy') {
-                        ctx.fillStyle = "#8B4513"; 
-                        ctx.fillRect(hX + 2, hY - 4, 16, 5); 
-                        ctx.fillRect(hX + 5, hY - 10, 10, 7); 
+                        ctx.fillStyle = "#5d4037"; // ปีกหมวกคาวบอยหนังเข้ม
+                        ctx.fillRect(hX + 1, hY - 2, gridSize - 2, 4);
+                        ctx.fillStyle = "#3e2723"; // ตัวโครงหมวกทรงสูง
+                        ctx.fillRect(hX + 5, hY - 10, 12, 8);
+                        ctx.fillStyle = "#d32f2f"; // แถบผ้ารัดหมวกสีแดงเท่ๆ
+                        ctx.fillRect(hX + 5, hY - 4, 12, 2);
                     } else if (equippedHat === 'hat-mask') {
-                        ctx.fillStyle = "#00E5FF"; 
-                        ctx.fillRect(hX + 3, hY + 4, 14, 6);
-                        ctx.fillStyle = "#000"; 
-                        ctx.fillRect(hX + 5, hY + 6, 3, 3);
-                        ctx.fillRect(hX + 12, hY + 6, 3, 3);
+                        ctx.fillStyle = "rgba(0, 229, 255, 0.75)"; // หน้ากากเลนส์ไซเบอร์เรืองแสง
+                        ctx.shadowColor = "#00E5FF"; ctx.shadowBlur = 8;
+                        ctx.fillRect(hX + 2, hY + 4, gridSize - 4, 7);
+                        ctx.shadowBlur = 0;
+                    } else if (equippedHat === 'hat-crown') {
+                        // มงกุฎทองคำประดับเพชรราชา
+                        ctx.fillStyle = "#ffd700";
+                        ctx.beginPath();
+                        ctx.moveTo(hX + 3, hY - 2);
+                        ctx.lineTo(hX + 3, hY - 12); // ยอดซ้าย
+                        ctx.lineTo(hX + 8, hY - 6);
+                        ctx.lineTo(hX + gridSize/2, hY - 15); // ยอดกลางสูงสุด
+                        ctx.lineTo(hX + gridSize - 8, hY - 6);
+                        ctx.lineTo(hX + gridSize - 3, hY - 12); // ยอดขวา
+                        ctx.lineTo(hX + gridSize - 3, hY - 2);
+                        ctx.closePath(); ctx.fill();
+                        // เม็ดอัญมณีสีแดงบนยอดมงกุฎ
+                        ctx.fillStyle = "#ff1a1a";
+                        ctx.fillRect(hX + gridSize/2 - 1.5, hY - 17, 3, 3);
                     }
                 }
             });
+
+            // วาดอนุภาคเอฟเฟกต์ระเบิด (VFX)
+            particles.forEach(p => p.draw());
         }
 
         function endGame() {
@@ -338,10 +471,10 @@
         }
 
         window.addEventListener("keydown", e => {
-            if (e.key === "ArrowUp" || e.key === "w") { if (dy === 0) { dx = 0; dy = -1; } }
-            else if (e.key === "ArrowDown" || e.key === "s") { if (dy === 0) { dx = 0; dy = 1; } }
-            else if (e.key === "ArrowLeft" || e.key === "a") { if (dx === 0) { dx = -1; dy = 0; } }
-            else if (e.key === "ArrowRight" || e.key === "d") { if (dx === 0) { dx = 1; dy = 0; } }
+            if ((e.key === "ArrowUp" || e.key === "w") && dy === 0) { dx = 0; dy = -1; }
+            else if ((e.key === "ArrowDown" || e.key === "s") && dy === 0) { dx = 0; dy = 1; }
+            else if ((e.key === "ArrowLeft" || e.key === "a") && dx === 0) { dx = -1; dy = 0; }
+            else if ((e.key === "ArrowRight" || e.key === "d") && dx === 0) { dx = 1; dy = 0; }
         });
 
         document.getElementById("restart-btn").addEventListener("click", resetGame);
