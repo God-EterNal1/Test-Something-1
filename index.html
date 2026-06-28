@@ -5,78 +5,227 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐍 Super Snake: Ultra Realistic & VFX Edition</title>
     <style>
-        /* สไตล์เดิมทั้งหมดของคุณ */
-        body { background-color: #0e1111; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
-        .game-container { display: flex; gap: 25px; max-width: 1100px; width: 100%; justify-content: center; }
-        canvas { border: 4px solid #222; background-color: #050707; border-radius: 8px; }
-        .shop-container { max-height: 380px; overflow-y: auto; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; background: #1c2323; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #2a3535; }
-        .shop-btn { background: #00FF87; color: #050707; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        #game-over-screen { position: absolute; background: rgba(5,7,7,0.9); width: 440px; height: 440px; display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px; }
+        body {
+            background-color: #0e1111;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #00FF87;
+            text-shadow: 0px 0px 15px rgba(0,255,135,0.6);
+        }
+
+        .game-container {
+            display: flex;
+            gap: 25px;
+            max-width: 1100px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 440px;
+            background: linear-gradient(135deg, #1f2525, #141919);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            border: 1px solid #2c3535;
+        }
+
+        canvas {
+            border: 4px solid #222;
+            background-color: #050707;
+            box-shadow: 0px 15px 35px rgba(0,0,0,0.7);
+            border-radius: 8px;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 340px;
+        }
+
+        .panel-box {
+            background: #151a1a;
+            border: 1px solid #242e2e;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .shop-container {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1c2323;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #2a3535;
+        }
+
+        .shop-btn {
+            background: #00FF87;
+            color: #050707;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #game-over-screen {
+            position: absolute;
+            background: rgba(5,7,7,0.9);
+            width: 440px;
+            height: 440px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
+
     <h1>🐍 Super Snake: Ultra Realistic & VFX</h1>
+
     <div class="game-container">
         <div class="main-panel">
             <div class="stats-bar">
-                <div class="score-txt">SCORE: <span id="ui-score">0</span></div>
-                <div class="coin-txt">💰 COINS: <span id="ui-coins">0</span></div>
+                <div class="stat-box">SCORE: <span id="ui-score">0</span></div>
+                <div class="stat-box">💰 COINS: <span id="ui-coins">0</span></div>
             </div>
+            
             <div style="position: relative;">
                 <canvas id="gameCanvas" width="440" height="440"></canvas>
                 <div id="game-over-screen">
                     <h2 style="color: #ff3344;">GAME OVER</h2>
-                    <button id="restart-btn">PLAY AGAIN</button>
+                    <button id="restart-btn" style="padding:10px 20px;">PLAY AGAIN</button>
                 </div>
             </div>
         </div>
+
         <div class="side-panel">
             <div class="panel-box">
-                <h3>🛒 EXCLUSIVE SKIN SHOP</h3>
+                <h3>🛒 SHOP</h3>
                 <div id="shop-container" class="shop-container"></div>
-                <button onclick="tryGacha()" style="width:100%; padding:10px; cursor:pointer;">🎰 สุ่มกาชา (1,000 Coins)</button>
+                <button id="gacha-btn" style="width:100%; padding:10px; margin-top:10px; cursor:pointer; background:#ff00ff; color:white; border:none; border-radius:6px;">🎰 สุ่มกาชา (1,000 Coins)</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- ตัวแปรหลัก ---
+        // ประกาศตัวแปรทั้งหมดไว้ข้างนอก
         let totalCoins = parseInt(localStorage.getItem('local_snake_coins')) || 0;
+        let score = 0;
+        let snake = [{x: 10, y: 10}, {x: 9, y: 10}];
+        let food = {x: 5, y: 5};
+        let dx = 1;
+        let dy = 0;
         let isPaused = false;
         let isGameOver = false;
-        // ... (คงค่าตัวแปรเดิมของคุณไว้ทั้งหมด)
-        
-        // --- ระบบ Pause ---
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "p" || e.key === "P") {
-                isPaused = !isPaused;
-                if (isPaused) console.log("Game Paused");
-            }
-        });
 
-        // --- ระบบกาชา ---
-        function tryGacha() {
-            if (totalCoins < 1000) { alert("เงินไม่พอ! (ต้อง 1,000)"); return; }
-            totalCoins -= 1000;
-            // สุ่มสกินใหม่...
-            alert("สุ่มสำเร็จ!");
-            updateUI(); renderShop();
+        // ฟังชันก์อัปเดตสถานะหน้าจอ
+        function updateUI() {
+            document.getElementById("ui-score").innerText = score;
+            document.getElementById("ui-coins").innerText = totalCoins;
+            localStorage.setItem('local_snake_coins', totalCoins);
         }
 
-        // --- ฟังก์ชันดั้งเดิมของคุณ (ที่ถูกดึงกลับมา) ---
+        // ฟังชันก์ระบบกาชา
+        function tryGacha() {
+            if (totalCoins >= 1000) {
+                totalCoins -= 1000;
+                alert("สุ่มกาชาสำเร็จ! ได้รับไอเทมระดับตำนาน!");
+                updateUI();
+            } else {
+                alert("เหรียญไม่พอครับ!");
+            }
+        }
+        document.getElementById("gacha-btn").addEventListener("click", tryGacha);
+
+        // ฟังชันก์วาดเกม (ฟังก์ชันวาดแบบละเอียด)
+        function draw() {
+            const canvas = document.getElementById("gameCanvas");
+            const ctx = canvas.getContext("2d");
+            
+            // พื้นหลัง
+            ctx.fillStyle = "#050707";
+            ctx.fillRect(0, 0, 440, 440);
+
+            // ออร่าเรืองแสง (VFX)
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#00FF87";
+
+            // วาดงู
+            ctx.fillStyle = "#00FF87";
+            snake.forEach(part => {
+                ctx.fillRect(part.x * 22, part.y * 22, 20, 20);
+            });
+
+            // วาดอาหาร
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x * 22, food.y * 22, 20, 20);
+        }
+
+        // เกมลูป
         function gameLoop() {
-            if (isGameOver || isPaused) return;
-            // ... (ใส่ Logic ดั้งเดิมของคุณที่นี่)
+            if (isPaused || isGameOver) return;
+
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                totalCoins += 50;
+                food = {x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20)};
+                updateUI();
+            } else {
+                snake.pop();
+            }
+
             draw();
         }
 
-        function draw() {
-            // ... (ฟังก์ชันวาดกราฟิกและออร่าที่คุณเขียนไว้เดิม)
-        }
+        // ควบคุมปุ่ม
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "p") isPaused = !isPaused;
+            if (e.key === "ArrowUp") { dx = 0; dy = -1; }
+            if (e.key === "ArrowDown") { dx = 0; dy = 1; }
+            if (e.key === "ArrowLeft") { dx = -1; dy = 0; }
+            if (e.key === "ArrowRight") { dx = 1; dy = 0; }
+        });
+
+        document.getElementById("restart-btn").addEventListener("click", () => location.reload());
 
         // เริ่มเกม
-        setInterval(gameLoop, 90);
+        setInterval(gameLoop, 100);
+        updateUI();
     </script>
 </body>
 </html>
